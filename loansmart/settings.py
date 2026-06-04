@@ -1,11 +1,24 @@
 """Django settings for the LoanSmart project."""
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-loansmart-demo-key-change-me"
-DEBUG = True
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
+# ⚠️ Use environment variable in production
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-loansmart-demo-key-change-me")
+
+# ⚠️ Set to False in production
+DEBUG = os.environ.get("DEBUG", "True") == "True"
+
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "testserver",
+    ".vercel.app",        # Vercel
+    ".railway.app",       # Railway
+    ".onrender.com",      # Render
+    "*",                  # Allow all (safe for now)
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -19,6 +32,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Added for static files
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -66,5 +80,9 @@ TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+# ✅ Static files config for production
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

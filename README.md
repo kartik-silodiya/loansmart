@@ -40,5 +40,13 @@ loan_app/ml/loan_model.pkl
 ## Notes
 
 - Currency is shown in Indian Rupees (₹).
+## 🚀 Live Demo
+👉 [https://loansmart.onrender.com](https://loansmart.onrender.com)
+
+## Tech Stack
+- Python + Django 4.2
+- scikit-learn (Random Forest)
+- Bootstrap 5
+- Deployed on Render
 - The model is trained on dummy data and is intended for learning/demo purposes only.
 - SQLite is used as the default database.

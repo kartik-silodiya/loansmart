@@ -5,122 +5,104 @@
 
   <h2 class="fw-bold mb-4">📊 Dashboard</h2>
 
-  <!-- ── Stat Cards ── -->
+  <!-- Stat Cards -->
   <div class="row g-4 mb-5">
-
     <div class="col-md-3">
       <div class="card text-center shadow-sm border-0 rounded-4 p-3">
         <h6 class="text-muted">Total Applications</h6>
         <h2 class="fw-bold text-primary">{{ total }}</h2>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card text-center shadow-sm border-0 rounded-4 p-3">
         <h6 class="text-muted">Approved</h6>
         <h2 class="fw-bold text-success">{{ approved }}</h2>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card text-center shadow-sm border-0 rounded-4 p-3">
         <h6 class="text-muted">Rejected</h6>
         <h2 class="fw-bold text-danger">{{ rejected }}</h2>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card text-center shadow-sm border-0 rounded-4 p-3">
         <h6 class="text-muted">Approval Rate</h6>
         <h2 class="fw-bold text-warning">{{ approval_rate }}%</h2>
       </div>
     </div>
-
   </div>
 
-  <!-- ── Charts Row ── -->
+  <!-- Charts -->
   <div class="row g-4">
-
-    <!-- Pie Chart -->
     <div class="col-md-4">
-      <div class="card shadow-sm border-0 rounded-4 p-4">
-        <h6 class="fw-bold mb-3">Approved vs Rejected</h6>
-        <canvas id="pieChart"></canvas>
+      <div class="card shadow-sm border-0 rounded-4 p-4" style="height:320px;">
+        <h6 class="fw-bold mb-2">Approved vs Rejected</h6>
+        <canvas id="pieChart" style="max-height:240px;"></canvas>
       </div>
     </div>
-
-    <!-- Bar Chart -->
     <div class="col-md-4">
-      <div class="card shadow-sm border-0 rounded-4 p-4">
-        <h6 class="fw-bold mb-3">Applications by Employment</h6>
-        <canvas id="barChart"></canvas>
+      <div class="card shadow-sm border-0 rounded-4 p-4" style="height:320px;">
+        <h6 class="fw-bold mb-2">By Employment</h6>
+        <canvas id="barChart" style="max-height:240px;"></canvas>
       </div>
     </div>
-
-    <!-- Line Chart -->
     <div class="col-md-4">
-      <div class="card shadow-sm border-0 rounded-4 p-4">
-        <h6 class="fw-bold mb-3">Applications Over Time</h6>
-        <canvas id="lineChart"></canvas>
+      <div class="card shadow-sm border-0 rounded-4 p-4" style="height:320px;">
+        <h6 class="fw-bold mb-2">Over Time</h6>
+        <canvas id="lineChart" style="max-height:240px;"></canvas>
       </div>
     </div>
-
   </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-  // ✅ Data loaded cleanly from Django as JSON
-  const approved = {{ approved }};
-  const rejected = {{ rejected }};
-  const employmentLabels = {{ employment_labels_json }};
-  const employmentCounts = {{ employment_counts_json }};
-  const dailyLabels = {{ daily_labels_json }};
-  const dailyCounts = {{ daily_counts_json }};
+  Chart.defaults.animation = false;
 
-  // Pie Chart
   new Chart(document.getElementById("pieChart"), {
     type: "doughnut",
     data: {
       labels: ["Approved", "Rejected"],
       datasets: [{
-        data: [approved, rejected],
+        data: [{{ approved }}, {{ rejected }}],
         backgroundColor: ["#22c55e", "#ef4444"],
         borderWidth: 0,
       }]
     },
-    options: { plugins: { legend: { position: "bottom" } } }
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { position: "bottom" } }
+    }
   });
 
-  // Bar Chart
   new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
-      labels: employmentLabels,
+      labels: {{ employment_labels_json|safe }},
       datasets: [{
-        label: "Applications",
-        data: employmentCounts,
+        data: {{ employment_counts_json|safe }},
         backgroundColor: ["#6366f1", "#f59e0b", "#14b8a6"],
         borderRadius: 6,
         borderWidth: 0,
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: true,
       plugins: { legend: { display: false } },
       scales: { y: { beginAtZero: true } }
     }
   });
 
-  // Line Chart
   new Chart(document.getElementById("lineChart"), {
     type: "line",
     data: {
-      labels: dailyLabels,
+      labels: {{ daily_labels_json|safe }},
       datasets: [{
-        label: "Applications",
-        data: dailyCounts,
+        data: {{ daily_counts_json|safe }},
         borderColor: "#6366f1",
         backgroundColor: "rgba(99,102,241,0.1)",
         fill: true,
@@ -129,9 +111,12 @@
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: true,
       plugins: { legend: { display: false } },
       scales: { y: { beginAtZero: true } }
     }
   });
 </script>
+
 {% endblock %}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Result | LoanSmart{% endblock %}
+
+{% block content %}
+<style>
+    .status-card {
+        border-radius: 24px;
+        color: #ffffff;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .status-card::after {
+        content: "";
+        position: absolute;
+        inset: -40% auto auto 54%;
+        width: 18rem;
+        height: 18rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.16);
+    }
+
+    .status-approved {
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+    }
+
+    .status-rejected {
+        background: linear-gradient(135deg, #dc2626, #f43f5e);
+    }
+
+    .status-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .confidence-track {
+        overflow: hidden;
+        height: 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.32);
+    }
+
+    .confidence-fill {
+        height: 100%;
+        width: {{ application.confidence }}%;
+        border-radius: inherit;
+        background: #ffffff;
+    }
+
+    .tip-card {
+        border: 1px solid #fee2e2;
+        border-radius: 18px;
+        background: #fff7f7;
+    }
+
+    .tip-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: #fee2e2;
+    }
+</style>
+
+<div class="result-panel bg-white p-4 p-md-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+        <div>
+            <p class="text-uppercase text-secondary fw-semibold small mb-1">Prediction for {{ application.full_name }}</p>
+            <h1 class="fw-bold mb-0">Loan Eligibility Result</h1>
+        </div>
+        <a class="btn btn-gradient align-self-start" href="{% url 'loan_app:form' %}">Try Again</a>
+    </div>
+
+    {% if application.prediction == "APPROVED" %}
+        <div class="status-card status-approved p-4 p-md-5 mb-4">
+            <div class="status-content">
+                <div class="display-3 mb-2">🎉</div>
+                <div class="badge-result fw-bold mb-2">APPROVED</div>
+                <p class="fs-4 mb-4">{{ application.confidence }}% likely to be approved</p>
+                <div class="confidence-track" aria-label="Confidence bar">
+                    <div class="confidence-fill"></div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="status-card status-rejected p-4 p-md-5 mb-4">
+            <div class="status-content">
+                <div class="display-3 mb-2">⚠️</div>
+                <div class="badge-result fw-bold mb-2">REJECTED</div>
+                <p class="fs-4 mb-4">{{ application.confidence }}% likely to be rejected</p>
+                <div class="confidence-track" aria-label="Confidence bar">
+                    <div class="confidence-fill"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="metric p-3 h-100">
+                <div class="text-secondary small">Monthly Income</div>
+                <div class="fw-bold">₹{{ application.monthly_income }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric p-3 h-100">
+                <div class="text-secondary small">Loan Amount</div>
+                <div class="fw-bold">₹{{ application.loan_amount }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric p-3 h-100">
+                <div class="text-secondary small">Credit History</div>
+                <div class="fw-bold">{{ application.credit_history }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric p-3 h-100">
+                <div class="text-secondary small">Existing EMIs</div>
+                <div class="fw-bold">₹{{ application.existing_emis }}</div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h4 fw-bold">Tips to improve your chances</h2>
+    <div class="row g-3 mb-4">
+        {% for tip in application.tips %}
+            <div class="col-md-4">
+                <div class="tip-card h-100 p-3 d-flex gap-3">
+                    <span class="tip-icon">💡</span>
+                    <div class="fw-semibold">{{ tip }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-gradient" href="{% url 'loan_app:form' %}">Try Again</a>
+        <a class="btn btn-outline-secondary" href="{% url 'loan_app:history' %}">View Prediction History</a>
+    </div>
+</div>
+{% endblock %}

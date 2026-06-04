@@ -9,3 +9,9 @@ urlpatterns = [
     path("result/<int:pk>/", views.result, name="result"),
     path("history/", views.history, name="history"),
 ]
+urlpatterns = [
+    path("", views.application_form, name="form"),
+    path("result/<int:pk>/", views.result, name="result"),
+    path("history/", views.history, name="history"),
+    path("dashboard/", views.dashboard, name="dashboard"),  # ← ADD THIS
+]
